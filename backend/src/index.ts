@@ -12,40 +12,42 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// Middleware
 app.use(cors({
   origin: process.env.FRONTEND_URL || '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use(express.json());
 
-// Health check
-app.get('/health', (_req, res) => {
+app.get('/health', (_req: any, res: any) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Routes
 app.use('/api/colleges', collegesRouter);
 app.use('/api/predictor', predictorRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/qa', qaRouter);
 
-// 404 handler
-app.use((_req, res) => {
+app.use((_req: any, res: any) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-// Error handler
-app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+app.use((err: Error, _req: any, res: any, _next: any) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Something went wrong' });
 });
 
-// Start server
 const start = async () => {
   try {
     await initDB();
+
+    if (process.env.RUN_SEED === 'true') {
+      console.log('Running seed...');
+      const seedModule = await import('./seed');
+      await seedModule.seed();
+      console.log('Seed completed!');
+    }
+
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
