@@ -5,6 +5,6 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "env": {
-    "NEXT_PUBLIC_API_URL": "@college_platform_api_url"
+    "NEXT_PUBLIC_API_URL": "https://edufind-backend.onrender.com"
   }
 }
