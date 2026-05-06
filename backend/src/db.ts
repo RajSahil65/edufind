@@ -18,7 +18,7 @@ export const initDB = async () => {
         location VARCHAR(255) NOT NULL,
         city VARCHAR(100) NOT NULL,
         state VARCHAR(100) NOT NULL,
-        type VARCHAR(50) NOT NULL CHECK (type IN ('IIT', 'NIT', 'IIIT', 'Private', 'Government', 'Deemed')),
+        type VARCHAR(50) NOT NULL,
         established INTEGER,
         rating DECIMAL(2,1) NOT NULL DEFAULT 0,
         total_reviews INTEGER DEFAULT 0,
@@ -37,6 +37,10 @@ export const initDB = async () => {
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
       );
+
+      ALTER TABLE colleges DROP CONSTRAINT IF EXISTS colleges_type_check;
+      ALTER TABLE colleges ADD CONSTRAINT colleges_type_check 
+        CHECK (type IN ('IIT', 'NIT', 'IIIT', 'IIM', 'Deemed', 'Government', 'Private'));
 
       CREATE TABLE IF NOT EXISTS courses (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -84,7 +88,6 @@ export const initDB = async () => {
       CREATE INDEX IF NOT EXISTS idx_courses_college ON courses(college_id);
       CREATE INDEX IF NOT EXISTS idx_predictor_exam ON predictor_data(exam, rank_min, rank_max);
 
-      -- Auth: Users table
       CREATE TABLE IF NOT EXISTS users (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         name VARCHAR(255) NOT NULL,
@@ -95,7 +98,6 @@ export const initDB = async () => {
         updated_at TIMESTAMP DEFAULT NOW()
       );
 
-      -- Saved colleges
       CREATE TABLE IF NOT EXISTS saved_colleges (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         user_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -104,7 +106,6 @@ export const initDB = async () => {
         UNIQUE(user_id, college_id)
       );
 
-      -- Saved comparisons
       CREATE TABLE IF NOT EXISTS saved_comparisons (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         user_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -113,7 +114,6 @@ export const initDB = async () => {
         created_at TIMESTAMP DEFAULT NOW()
       );
 
-      -- Q&A questions
       CREATE TABLE IF NOT EXISTS questions (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         user_id UUID REFERENCES users(id) ON DELETE SET NULL,
@@ -127,7 +127,6 @@ export const initDB = async () => {
         updated_at TIMESTAMP DEFAULT NOW()
       );
 
-      -- Q&A answers
       CREATE TABLE IF NOT EXISTS answers (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         question_id UUID REFERENCES questions(id) ON DELETE CASCADE,
@@ -139,7 +138,6 @@ export const initDB = async () => {
         updated_at TIMESTAMP DEFAULT NOW()
       );
 
-      -- Upvote tracking
       CREATE TABLE IF NOT EXISTS question_upvotes (
         user_id UUID REFERENCES users(id) ON DELETE CASCADE,
         question_id UUID REFERENCES questions(id) ON DELETE CASCADE,
