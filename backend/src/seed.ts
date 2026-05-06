@@ -551,4 +551,4 @@ async function seed() {
 export { seed };
 if (require.main === module) {
   initDB().then(() => seed()).catch(console.error);
-}g
+}
