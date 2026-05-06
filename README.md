@@ -176,14 +176,16 @@ cd frontend && npm run dev
 ---
 
 ## 📦 Deployment
-
-### Backend → Railway
-
+### BACKEND → RENDER
 1. Push to GitHub
-2. New Project → Deploy from GitHub (select `backend/` folder)
-3. Add PostgreSQL plugin
-4. Set env vars: `DATABASE_URL`, `JWT_SECRET`, `FRONTEND_URL`, `NODE_ENV=production`
-5. Run: `railway run npm run db:seed`
+2. Go to render.com → New + → Web Service
+3. Connect GitHub → select `edufind` repo
+4. Set Root Directory: `backend`
+5. Build Command: `npm install && npm run build`
+6. Start Command: `npm start`
+7. Add PostgreSQL database from Render dashboard
+8. Set env vars: `DATABASE_URL`, `JWT_SECRET`, `FRONTEND_URL`, `NODE_ENV=production`, `RUN_SEED=true`
+9. Deploy → set `RUN_SEED=false` after first deployment
 
 ### Frontend → Vercel
 
